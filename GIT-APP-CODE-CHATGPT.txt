@@ -1,0 +1,55 @@
+import React, { useState } from 'react';
+
+function App() {
+  const [studentId, setStudentId] = useState('');
+  const [schedule, setSchedule] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Simulate fetching schedule from a database or API
+    const fetchedSchedule = fetchSchedule(studentId);
+    setSchedule(fetchedSchedule);
+  };
+
+  const fetchSchedule = (id) => {
+    // Dummy data: Replace this with actual data fetching logic
+    const schedules = {
+      '12345': ['Math', 'English', 'Science'],
+      '67890': ['History', 'Biology', 'Art']
+    };
+
+    return schedules[id] || 'No schedule found for this ID';
+  };
+
+  return (
+    <div>
+      <h1>Student Schedule Finder</h1>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Enter Student ID:
+          <input
+            type="text"
+            value={studentId}
+            onChange={(e) => setStudentId(e.target.value)}
+            required
+          />
+        </label>
+        <button type="submit">Get Schedule</button>
+      </form>
+
+      {schedule && (
+        <div>
+          <h2>Class Schedule:</h2>
+          <ul>
+            {Array.isArray(schedule) ? schedule.map((course, index) => (
+              <li key={index}>{course}</li>
+            )) : <p>{schedule}</p>}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
