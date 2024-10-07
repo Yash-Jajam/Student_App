@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+/*import logo from './logo.svg';
 import './App.css';
 
 function App() {
@@ -22,4 +22,22 @@ function App() {
   );
 }
 //test comment from Yash
+export default App;
+*/
+
+import React, { useState } from 'react';
+import ScheduleInput from './ScheduleInput';
+import ScheduleDisplay from './ScheduleDisplay';
+
+function App() {
+  const [schedule, setSchedule] = useState({});
+
+  return (
+    <div>
+      <ScheduleInput setSchedule={setSchedule} />
+      {schedule && <ScheduleDisplay schedule={schedule} />}
+    </div>
+  );
+}
+
 export default App;
