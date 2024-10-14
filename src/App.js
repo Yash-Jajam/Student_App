@@ -16,14 +16,14 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Search Student Details</h1>
+      <h1>Search for Student Schedule</h1>
       <input
         type="text"
-        placeholder="Enter Student ID"
+        placeholder="Enter Your Student ID:"
         value={studentId}
         onChange={handleInputChange}
       />
-      <button onClick={fetchStudentData}>Get Student Details</button>
+      <button onClick={fetchStudentData}>Search</button>
 
       {studentData && (
         <div>
@@ -31,14 +31,13 @@ function App() {
             <p>{studentData.message}</p>
           ) : (
             <div>
-              <h3>Student Details</h3>
-              <p>Name: {studentData.name}</p>
-              <p>ClassID: {studentData.classID}</p>
-              <p>ClassName: {studentData.className}</p>
-              <p>ClassDate: {studentData.classDate}</p>
-              <p>ClassTime: {studentData.classTime}</p>
-              <p>Location: {studentData.classLocation}</p>
-              <p>Syllabus: {studentData.syllabus}</p>
+              <h3>2024 Fall Schedule for {studentData.name}</h3>
+              <p>Course ID: {studentData.classID}</p>
+              <p>Course Name: {studentData.className}</p>
+              <p>Course Date: {studentData.classDate}</p>
+              <p>Course Time: {studentData.classTime}</p>
+              <p>Course Location: {studentData.classLocation}</p>
+              <p>Course Syllabus: {studentData.syllabus}</p>
             </div>
           )}
         </div>
