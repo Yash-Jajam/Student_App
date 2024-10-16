@@ -38,12 +38,15 @@ function App() {
               <p>Course Time: {studentData.classTime}</p>
               <p>Course Location: {studentData.classLocation}</p>
               <p>Course Syllabus: {studentData.syllabus}</p>
+<<<<<<< HEAD
               {/* Add the image below the schedule */}
               <img 
                 src={`${process.env.PUBLIC_URL}/${studentData.map}.png`} 
                 alt={`${studentData.map} map`} 
                 style={{ width: '1000px', height: 'auto', marginTop: '20px' }} 
               />
+=======
+>>>>>>> origin
             </div>
           )}
         </div>
@@ -52,4 +55,8 @@ function App() {
   );
 }
 
+<<<<<<< HEAD
 export default App;
+=======
+export default App;
+>>>>>>> origin
