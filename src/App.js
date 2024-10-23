@@ -5,6 +5,7 @@ function App() {
   const [studentId, setStudentId] = useState('');
   const [studentData, setStudentData] = useState(null);
   const [showSyllabus, setShowSyllabus] = useState([]); // Track multiple syllabuses
+  const [showMap, setShowMap] = useState([]); // Track multiple maps
 
   const handleInputChange = (e) => {
     setStudentId(e.target.value);
@@ -14,16 +15,22 @@ function App() {
     const student = students.find((s) => s.id === parseInt(studentId));
     setStudentData(student || { message: 'Student not found!' });
 
-    // Reset syllabus view when fetching new data
+    // Reset syllabus and map views when fetching new data
     if (student) {
       setShowSyllabus(new Array(student.classes.length).fill(false));
+      setShowMap(new Array(student.classes.length).fill(false));
     }
   };
-
+  // Toggle syllabus display for the specific class
   const toggleSyllabus = (index) => {
-    // Toggle syllabus display for the specific class
     setShowSyllabus((prevShowSyllabus) =>
       prevShowSyllabus.map((show, i) => (i === index ? !show : show))
+    );
+  };
+
+  const toggleMap = (index) => {
+    setShowMap((prevShowMap) =>
+      prevShowMap.map((show, i) => (i === index ? !show : show))
     );
   };
 
@@ -77,6 +84,23 @@ function App() {
                           src={`${process.env.PUBLIC_URL}/${classItem.syllabus}.pdf`}
                           title="Syllabus"
                           style={{ width: '100%', height: '400px', border: 'none' }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Button to toggle the map */}
+                    <button onClick={() => toggleMap(index)} style={{ marginTop: '10px' }}>
+                      {showMap[index] ? 'Hide Map' : 'Show Map'}
+                    </button>
+
+                    {/* Conditionally render the map iframe */}
+                    {showMap[index] && (
+                      <div style={{ marginTop: '20px' }}>
+                        <p><b>Building Map:</b></p>
+                        <img 
+                        src={`${process.env.PUBLIC_URL}/${classItem.map}.png`}  // Use classItem.map instead of studentData.map
+                        alt={`${classItem.map} map`} 
+                        style={{ width: '600px', height: 'auto', marginTop: '20px' }} 
                         />
                       </div>
                     )}
