@@ -1,38 +1,47 @@
 import React, { useState } from 'react';
-import students from './studentData';
 
 function App() {
   const [studentId, setStudentId] = useState('');
   const [studentData, setStudentData] = useState(null);
-  const [showSyllabus, setShowSyllabus] = useState([]); // Track multiple syllabuses
-  const [showMap, setShowMap] = useState([]); // Track multiple maps
+
+  // Commented out unused state and toggle functions
+  // const [showSyllabus, setShowSyllabus] = useState([]); // Track multiple syllabuses
+  // const [showMap, setShowMap] = useState([]); // Track multiple maps
 
   const handleInputChange = (e) => {
     setStudentId(e.target.value);
   };
 
-  const fetchStudentData = () => {
-    const student = students.find((s) => s.id === parseInt(studentId));
-    setStudentData(student || { message: 'Student not found!' });
-
-    // Reset syllabus and map views when fetching new data
-    if (student) {
-      setShowSyllabus(new Array(student.classes.length).fill(false));
-      setShowMap(new Array(student.classes.length).fill(false));
+  // Fetch data from Express backend
+  const fetchStudentData = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/students/${studentId}`);
+      const data = await response.json();
+      setStudentData(data);
+      
+      // Reset syllabus and map views when fetching new data
+      // if (data.classes) {
+      //   setShowSyllabus(new Array(data.classes.length).fill(false));
+      //   setShowMap(new Array(data.classes.length).fill(false));
+      // }
+    } catch (error) {
+      console.error("Error fetching student data:", error);
+      setStudentData({ message: 'Error fetching student data!' });
     }
   };
-  // Toggle syllabus display for the specific class
-  const toggleSyllabus = (index) => {
-    setShowSyllabus((prevShowSyllabus) =>
-      prevShowSyllabus.map((show, i) => (i === index ? !show : show))
-    );
-  };
 
-  const toggleMap = (index) => {
-    setShowMap((prevShowMap) =>
-      prevShowMap.map((show, i) => (i === index ? !show : show))
-    );
-  };
+  // Commented out older toggle functions
+  // const toggleSyllabus = (index) => {
+  //   setShowSyllabus((prevShowSyllabus) =>
+  //     prevShowSyllabus.map((show, i) => (i === index ? !show : show))
+  //   );
+  // };
+
+  // const toggleMap = (index) => {
+  //   setShowMap((prevShowMap) =>
+  //     prevShowMap.map((show, i) => (i === index ? !show : show))
+  //   );
+  // };
 
   return (
     <div className="App">
@@ -71,13 +80,13 @@ function App() {
                     <p><strong>Course Time:</strong> {classItem.classTime}</p>
                     <p><strong>Course Location:</strong> {classItem.classLocation}</p>
 
-                    {/* Button to toggle the syllabus */}
-                    <button onClick={() => toggleSyllabus(index)}>
+                    {/* Button to toggle the syllabus (commented out) */}
+                    {/* <button onClick={() => toggleSyllabus(index)}>
                       {showSyllabus[index] ? 'Hide Syllabus' : 'View Syllabus'}
-                    </button>
+                    </button> */}
 
-                    {/* Conditionally render the syllabus iframe */}
-                    {showSyllabus[index] && (
+                    {/* Conditionally render the syllabus iframe (commented out) */}
+                    {/* {showSyllabus[index] && (
                       <div style={{ marginTop: '20px' }}>
                         <p><b>Course Syllabus:</b></p>
                         <iframe
@@ -86,24 +95,24 @@ function App() {
                           style={{ width: '100%', height: '400px', border: 'none' }}
                         />
                       </div>
-                    )}
+                    )} */}
 
-                    {/* Button to toggle the map */}
-                    <button onClick={() => toggleMap(index)} style={{ marginTop: '10px' }}>
+                    {/* Button to toggle the map (commented out) */}
+                    {/* <button onClick={() => toggleMap(index)} style={{ marginTop: '10px' }}>
                       {showMap[index] ? 'Hide Map' : 'Show Map'}
-                    </button>
+                    </button> */}
 
-                    {/* Conditionally render the map iframe */}
-                    {showMap[index] && (
+                    {/* Conditionally render the map iframe (commented out) */}
+                    {/* {showMap[index] && (
                       <div style={{ marginTop: '20px' }}>
                         <p><b>Building Map:</b></p>
                         <img 
-                        src={`${process.env.PUBLIC_URL}/${classItem.map}.png`}  // Use classItem.map instead of studentData.map
-                        alt={`${classItem.map} map`} 
-                        style={{ width: '600px', height: 'auto', marginTop: '20px' }} 
+                          src={`${process.env.PUBLIC_URL}/${classItem.map}.png`} 
+                          alt={`${classItem.map} map`} 
+                          style={{ width: '600px', height: 'auto', marginTop: '20px' }} 
                         />
                       </div>
-                    )}
+                    )} */}
                   </div>
                 ))}
               </div>
