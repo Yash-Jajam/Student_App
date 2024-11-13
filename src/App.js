@@ -9,7 +9,7 @@ function App() {
   const handleFetchData = () => {
     if (studentId) {
       setLoading(true); // Start loading
-      fetch(`http://localhost:3000/users?student_id=${studentId}`)
+      fetch(http://localhost:3000/users?student_id=${studentId})
         .then((response) => response.json())
         .then((data) => {
           console.log('Student data fetched:', data);
@@ -35,7 +35,7 @@ function App() {
 
   return (
     <div>
-      <h2>Enter Student ID</h2>
+      <h2>Enter Your Student ID</h2>
       <input
         type="number"
         value={studentId}
@@ -43,22 +43,34 @@ function App() {
         placeholder="Enter student ID"
         min="0"
       />
-      <button onClick={handleFetchData}>Fetch Student Data</button>
+      <button onClick={handleFetchData}>Find Your Schedule</button>
 
       {studentData ? (
         <div>
-          <h3>Student Class Schedule</h3>
+          <h3>{studentData.name}'s Class Schedule</h3>
           <p><strong>Name:</strong> {studentData.name}</p>
           <p><strong>Email:</strong> {studentData.email}</p>
-          <p><strong>Class Name:</strong> {studentData.class_name}</p>
-          <p><strong>Class Date:</strong> {studentData.class_date}</p>
-          <p><strong>Class Time:</strong> {studentData.class_time}</p>
-          <p><strong>Class Location:</strong> {studentData.class_location}</p>
-          <p><strong>Syllabus:</strong> {studentData.syllabus}</p>
-          <p><strong>Map:</strong> {studentData.map}</p>
+
+          {studentData.classes && studentData.classes.length > 0 ? (
+            <div>
+              {studentData.classes.map((classItem, index) => (
+                <div key={index} style={{ margin: '20px', border: '1px solid #ccc', padding: '10px', borderRadius: '8px' }}>
+                  <h4>Class {index + 1}</h4>
+                  <p><strong>Class Name:</strong> {classItem.class_name}</p>
+                  <p><strong>Class Date:</strong> {classItem.class_date}</p>
+                  <p><strong>Class Time:</strong> {classItem.class_time}</p>
+                  <p><strong>Class Location:</strong> {classItem.class_location}</p>
+                  <p><strong>Syllabus:</strong> {classItem.syllabus}</p>
+                  <p><strong>Map:</strong> {classItem.map}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No classes found for this student.</p>
+          )}
         </div>
       ) : (
-        <div>Enter a student ID to fetch their details.</div>
+        <div>Enter your Student ID to see your schedule.</div>
       )}
     </div>
   );
