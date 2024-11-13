@@ -1,115 +1,64 @@
-import React, { useState } from 'react';
-import students from './studentData';
+import React, { useState, useEffect } from 'react';
 
 function App() {
-  const [studentId, setStudentId] = useState('');
+  const [studentId, setStudentId] = useState(''); // State to track the user input
   const [studentData, setStudentData] = useState(null);
-  const [showSyllabus, setShowSyllabus] = useState([]); // Track multiple syllabuses
-  const [showMap, setShowMap] = useState([]); // Track multiple maps
+  const [loading, setLoading] = useState(false); // State to track loading status
 
-  const handleInputChange = (e) => {
-    setStudentId(e.target.value);
-  };
-
-  const fetchStudentData = () => {
-    const student = students.find((s) => s.id === parseInt(studentId));
-    setStudentData(student || { message: 'Student not found!' });
-
-    // Reset syllabus and map views when fetching new data
-    if (student) {
-      setShowSyllabus(new Array(student.classes.length).fill(false));
-      setShowMap(new Array(student.classes.length).fill(false));
+  // Fetch student data when the button is pressed
+  const handleFetchData = () => {
+    if (studentId) {
+      setLoading(true); // Start loading
+      fetch(`http://localhost:3000/users?student_id=${studentId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Student data fetched:', data);
+          setStudentData(data); // Set student data in state
+          setLoading(false); // Stop loading
+        })
+        .catch((error) => {
+          console.error('Error fetching student data:', error);
+          setLoading(false); // Stop loading in case of an error
+        });
     }
   };
-  // Toggle syllabus display for the specific class
-  const toggleSyllabus = (index) => {
-    setShowSyllabus((prevShowSyllabus) =>
-      prevShowSyllabus.map((show, i) => (i === index ? !show : show))
-    );
+
+  // Handle input changes for studentId
+  const handleInputChange = (event) => {
+    setStudentId(event.target.value);
   };
 
-  const toggleMap = (index) => {
-    setShowMap((prevShowMap) =>
-      prevShowMap.map((show, i) => (i === index ? !show : show))
-    );
-  };
+  // Show loading message if fetching data
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="App">
-      <h1>Search for Student Schedule</h1>
+    <div>
+      <h2>Enter Student ID</h2>
       <input
-        type="text"
-        placeholder="Enter Your Student ID:"
+        type="number"
         value={studentId}
         onChange={handleInputChange}
+        placeholder="Enter student ID"
+        min="0"
       />
-      <button onClick={fetchStudentData}>Search</button>
+      <button onClick={handleFetchData}>Fetch Student Data</button>
 
-      {studentData && (
+      {studentData ? (
         <div>
-          {studentData.message ? (
-            <p>{studentData.message}</p>
-          ) : (
-            <div>
-              <h3>2024 Fall Schedule for {studentData.name}</h3>
-
-              {/* Flex container for displaying classes side by side */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-                {studentData.classes.map((classItem, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      border: '1px solid #ccc',
-                      padding: '20px',
-                      width: '600px',
-                      boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-                    }}
-                  >
-                    <p><strong>Course ID:</strong> {classItem.classID}</p>
-                    <p><strong>Course Name:</strong> {classItem.className}</p>
-                    <p><strong>Course Date:</strong> {classItem.classDate}</p>
-                    <p><strong>Course Time:</strong> {classItem.classTime}</p>
-                    <p><strong>Course Location:</strong> {classItem.classLocation}</p>
-
-                    {/* Button to toggle the syllabus */}
-                    <button onClick={() => toggleSyllabus(index)}>
-                      {showSyllabus[index] ? 'Hide Syllabus' : 'View Syllabus'}
-                    </button>
-
-                    {/* Conditionally render the syllabus iframe */}
-                    {showSyllabus[index] && (
-                      <div style={{ marginTop: '20px' }}>
-                        <p><b>Course Syllabus:</b></p>
-                        <iframe
-                          src={`${process.env.PUBLIC_URL}/${classItem.syllabus}.pdf`}
-                          title="Syllabus"
-                          style={{ width: '100%', height: '400px', border: 'none' }}
-                        />
-                      </div>
-                    )}
-
-                    {/* Button to toggle the map */}
-                    <button onClick={() => toggleMap(index)} style={{ marginTop: '10px' }}>
-                      {showMap[index] ? 'Hide Map' : 'Show Map'}
-                    </button>
-
-                    {/* Conditionally render the map iframe */}
-                    {showMap[index] && (
-                      <div style={{ marginTop: '20px' }}>
-                        <p><b>Building Map:</b></p>
-                        <img 
-                        src={`${process.env.PUBLIC_URL}/${classItem.map}.png`}  // Use classItem.map instead of studentData.map
-                        alt={`${classItem.map} map`} 
-                        style={{ width: '600px', height: 'auto', marginTop: '20px' }} 
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <h3>Student Class Schedule</h3>
+          <p><strong>Name:</strong> {studentData.name}</p>
+          <p><strong>Email:</strong> {studentData.email}</p>
+          <p><strong>Class Name:</strong> {studentData.class_name}</p>
+          <p><strong>Class Date:</strong> {studentData.class_date}</p>
+          <p><strong>Class Time:</strong> {studentData.class_time}</p>
+          <p><strong>Class Location:</strong> {studentData.class_location}</p>
+          <p><strong>Syllabus:</strong> {studentData.syllabus}</p>
+          <p><strong>Map:</strong> {studentData.map}</p>
         </div>
+      ) : (
+        <div>Enter a student ID to fetch their details.</div>
       )}
     </div>
   );
