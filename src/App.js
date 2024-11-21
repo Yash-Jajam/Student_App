@@ -12,7 +12,7 @@ function App() {
   const handleFetchData = () => {
     if (studentId) {
       setLoading(true); // Start loading
-      fetch(http://localhost:3000/users?student_id=${studentId})
+      fetch(`http://localhost:3000/users?student_id=${studentId}`)
         .then((response) => response.json())
         .then((data) => {
           console.log('Student data fetched:', data);
@@ -60,7 +60,7 @@ function App() {
         type="number"
         value={studentId}
         onChange={handleInputChange}
-        placeholder="Enter Student ID"
+        placeholder="Enter student ID"
         min="0"
       />
       <button onClick={handleFetchData}>Find Your Schedule</button>
@@ -86,7 +86,7 @@ function App() {
                   <div className="iframe-container">
                     <p><b>Course Syllabus:</b></p>
                     <iframe
-                      src={${process.env.PUBLIC_URL}/${classItem.syllabus}.pdf}
+                      src={`${process.env.PUBLIC_URL}/${classItem.syllabus}.pdf`}
                       title="Syllabus"
                       style={{ width: '100%', height: '400px', border: 'none' }}
                     />
@@ -100,8 +100,8 @@ function App() {
                   <div className="iframe-container">
                     <p><b>Building Map:</b></p>
                     <img 
-                      src={${process.env.PUBLIC_URL}/${classItem.map}.png}
-                      alt={${classItem.map} map} 
+                      src={`${process.env.PUBLIC_URL}/${classItem.map}.png`}
+                      alt={`${classItem.map} map`} 
                       style={{ width: '100%', height: 'auto' }}
                     />
                   </div>
