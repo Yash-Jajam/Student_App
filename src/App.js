@@ -1,54 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
   const [studentId, setStudentId] = useState(''); // State to track the user input
   const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(false); // State to track loading status
+  const [error, setError] = useState(null); // State to track errors
   const [showSyllabus, setShowSyllabus] = useState([]); // State to track syllabus visibility
   const [showMap, setShowMap] = useState([]); // State to track map visibility
 
   // Fetch student data when the button is pressed
   const handleFetchData = () => {
-    if (studentId) {
-      setLoading(true); // Start loading
-      fetch(`http://localhost:3000/users?student_id=${studentId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('Student data fetched:', data);
-          setStudentData(data); // Set student data in state
-          setLoading(false); // Stop loading
-          // Set initial visibility states for syllabus and map
-          setShowSyllabus(new Array(data.classes.length).fill(false));
-          setShowMap(new Array(data.classes.length).fill(false));
-        })
-        .catch((error) => {
-          console.error('Error fetching student data:', error);
-          setLoading(false); // Stop loading in case of an error
-        });
+    if (!studentId || isNaN(studentId) || parseInt(studentId) < 0) {
+      setError('Please enter a valid Student ID.');
+      setStudentData(null); // Clear previous data
+      return;
     }
+
+    setLoading(true);
+    setError(null); // Clear any previous error
+    setStudentData(null); // Clear previous data to prevent displaying old data during the fetch
+
+    fetch(`http://localhost:3000/users?student_id=${studentId}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!data || !data.classes || data.classes.length === 0) {
+          throw new Error('No schedule data found for the provided Student ID.');
+        }
+        setStudentData(data); // Set student data in state
+        setShowSyllabus(new Array(data.classes.length).fill(false));
+        setShowMap(new Array(data.classes.length).fill(false));
+      })
+      .catch((error) => {
+        console.error('Error fetching student data:', error);
+        setError(error.message);
+        setStudentData(null); // Clear previous data if an error occurs
+      })
+      .finally(() => {
+        setLoading(false); // Stop loading
+      });
   };
 
-  // Handle input changes for studentId
   const handleInputChange = (event) => {
     setStudentId(event.target.value);
   };
 
-  // Toggle syllabus visibility
   const toggleSyllabus = (index) => {
     setShowSyllabus((prevShowSyllabus) =>
       prevShowSyllabus.map((show, i) => (i === index ? !show : show))
     );
   };
 
-  // Toggle map visibility
   const toggleMap = (index) => {
     setShowMap((prevShowMap) =>
       prevShowMap.map((show, i) => (i === index ? !show : show))
     );
   };
 
-  // Show loading message if fetching data
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -60,10 +73,11 @@ function App() {
         type="number"
         value={studentId}
         onChange={handleInputChange}
-        placeholder="Enter student ID"
+        placeholder="Enter Student ID"
         min="0"
       />
       <button onClick={handleFetchData}>Find Your Schedule</button>
+      {error && <div className="error-message">{error}</div>}
 
       {studentData ? (
         <div>
@@ -85,11 +99,15 @@ function App() {
                 {showSyllabus[index] && (
                   <div className="iframe-container">
                     <p><b>Course Syllabus:</b></p>
-                    <iframe
-                      src={`${process.env.PUBLIC_URL}/${classItem.syllabus}.pdf`}
-                      title="Syllabus"
-                      style={{ width: '100%', height: '400px', border: 'none' }}
-                    />
+                    {classItem.syllabus ? (
+                      <iframe
+                        src={`${process.env.PUBLIC_URL}/${classItem.syllabus}.pdf`}
+                        title="Syllabus"
+                        style={{ width: '100%', height: '400px', border: 'none' }}
+                      />
+                    ) : (
+                      <p>Syllabus not found.</p>
+                    )}
                   </div>
                 )}
 
@@ -99,11 +117,15 @@ function App() {
                 {showMap[index] && (
                   <div className="iframe-container">
                     <p><b>Building Map:</b></p>
-                    <img 
-                      src={`${process.env.PUBLIC_URL}/${classItem.map}.png`}
-                      alt={`${classItem.map} map`} 
-                      style={{ width: '100%', height: 'auto' }}
-                    />
+                    {classItem.map ? (
+                      <img
+                        src={`${process.env.PUBLIC_URL}/${classItem.map}.png`}
+                        alt={`${classItem.map} map`}
+                        style={{ width: '100%', height: 'auto' }}
+                      />
+                    ) : (
+                      <p>Map not found.</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -111,7 +133,7 @@ function App() {
           </div>
         </div>
       ) : (
-        <div>Enter your Student ID to see your schedule.</div>
+        !error && <div>Enter your Student ID to see your schedule.</div>
       )}
     </div>
   );
